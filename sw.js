@@ -1,6 +1,6 @@
 // Network-first so new job feeds show up right away; falls back to cache offline.
-const CACHE = "conquer-v1";
-const SHELL = ["/", "/index.html", "/styles.css", "/app.js", "/jobs.js", "/manifest.json", "/icon.svg", "/icon-192.png"];
+const CACHE = "conquer-v3";
+const SHELL = ["./", "index.html", "styles.css", "app.js", "jobs.js", "logos.js", "manifest.json", "icon.svg", "icon-192.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -16,6 +16,6 @@ self.addEventListener("fetch", e => {
       const copy = r.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return r;
-    }).catch(() => caches.match(e.request).then(r => r || caches.match("/index.html")))
+    }).catch(() => caches.match(e.request).then(r => r || caches.match("index.html")))
   );
 });

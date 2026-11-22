@@ -193,16 +193,12 @@
     const t = $("#toast"); t.textContent = msg; t.classList.add("show");
     clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 1700);
   }
+  // Only links known to open this exact posting: the listing it came from, plus
+  // employer links that were opened and checked (j.links).
   function applyLinks(j) {
-    const q = `${j.company} ${j.title.replace(/\(.*?\)/g, "")}`.trim();
-    return [
-      { primary: true, c: j.source === "Indeed" ? "#2557A7" : "#14A35A", t: j.source[0], label: `Apply on ${j.source}`, sub: "Original listing", href: j.url },
-      { c: "#0A66C2", t: "in", label: "LinkedIn Jobs", sub: "Same role, Easy Apply if offered", href: `https://www.linkedin.com/jobs/search/?keywords=${enc(q)}` },
-      { c: "#F38B00", t: "W", label: "Workday", sub: "If they hire through Workday", href: `https://www.google.com/search?q=${enc(`site:myworkdayjobs.com "${j.company}" intern`)}` },
-      { c: "#0E2240", t: "⌂", label: "Company careers site", sub: j.domain, href: `https://www.google.com/search?q=${enc(`${j.company} careers internship site:${j.domain}`)}` },
-      { c: "#2557A7", t: "i", label: "Indeed", sub: "Same role on Indeed", href: `https://www.indeed.com/jobs?q=${enc(q)}&l=${enc(j.location)}` },
-      { c: "#0E8A7E", t: "H", label: "Handshake", sub: "Through the University of Arkansas", href: `https://app.joinhandshake.com/stu/postings?query=${enc(j.company)}` }
-    ];
+    const src = { primary: true, c: j.source === "Indeed" ? "#2557A7" : "#14A35A", t: j.source[0], label: `Apply on ${j.source}`, sub: "The listing this came from", href: j.url };
+    const extra = (j.links || []).map(l => ({ c: "#0E2240", t: "✓", label: l.label, sub: "Same posting on the employer's site", href: l.url }));
+    return [src, ...extra];
   }
 
   // ======================================================================
@@ -464,7 +460,7 @@
     const applyBox = `<section class="box"><h3>Where to apply</h3><div class="links">
       ${applyLinks(j).map(l => `<a class="link ${l.primary ? "primary" : ""}" href="${esc(l.href)}" target="_blank" rel="noopener">
         <span class="ico" style="background:${l.c}">${esc(l.t)}</span><span>${esc(l.label)}<small>${esc(l.sub)}</small></span></a>`).join("")}
-    </div><p class="note">The first link is the verified listing. The rest search each site for this role.</p></section>`;
+    </div><p class="note">${(j.links || []).length ? "Every link here opens this exact posting. Applying on the employer's site is usually best." : `Only ${esc(j.source)} has this posting right now. Apply there.`}</p></section>`;
 
     const peopleBox = `<section class="box people-box" id="people"><h3>Who to message at ${esc(j.company)}</h3>
       <p class="note top">Ranked by what you have in common, best first.</p>
@@ -555,6 +551,8 @@
 
   // ---------- Boot ----------
   show("explore");
+  // Installable offline app when served from GitHub Pages (not inside Claude).
+  if ("serviceWorker" in navigator && !window.claude && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
   (async () => {
     const [db, user] = await Promise.all([claude_use("db"), claude_use("user")]);
     if (!db) { setSync("Saved on this device"); return; }

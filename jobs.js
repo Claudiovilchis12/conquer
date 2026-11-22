@@ -2,6 +2,7 @@
 // Tailored to: first-year Mechanical Engineering student (U of Arkansas), SolidWorks, Formula SAE
 // suspension/brakes, automotive apprenticeship, Spanish/German, based in Houston / Fayetteville.
 // Pay shown as hourly where the listing gave hourly; annual ranges are converted (~2,080 hrs/yr) and marked "est."
+// links = extra apply links opened and confirmed to be this exact posting (2026-11-21).
 window.CONQUER_FEED_UPDATED = "2026-11-21";
 window.CONQUER_JOBS = [
   {
@@ -29,7 +30,7 @@ window.CONQUER_JOBS = [
     fit: "Startups value CAD and build experience: your SolidWorks RC car and FSAE projects fit well."
   },
   {
-    id: "castelion-me", industry: "Aerospace & Defense", days: 26, title: "Mechanical Engineering Intern (Summer 2027)", company: "Castelion",
+    id: "castelion-me", links: [{"label": "Castelion careers", "url": "https://www.castelion.com/careers/job/4468205009/"}], industry: "Aerospace & Defense", days: 26, title: "Mechanical Engineering Intern (Summer 2027)", company: "Castelion",
     domain: "castelion.com", logo: "https://www.ziprecruiter.com/svc/fotomat/public-nosensitive-ziprecruiter-logos/company/83bc9ec6.jpeg",
     location: "Allen, TX", pay: "~$17–23/hr (est.)", source: "ZipRecruiter", posted: "26 days ago",
     url: "https://www.ziprecruiter.com/job-redirect?match_token=CpQBChYtelJjdS1CMDFTYUJMcTdsWUoxeC1nEiQwMWEyMDE1NC0xYzMxLTdlM2EtOGNhZS1mZjY5NTYxYWIwOGYaUEFBRXZzNzRHczBrVlZqbzJuWWZSZThqYVhxUzFOLWFfdy04STh6SUlpSW84Zkt5RWR3NllkS3pzVzZ2djNyMHZhdzVmU0FIVUxySmNRZFlXIMmtBRABGMmtBQ%3D%3D&tsid=100000502",
@@ -53,7 +54,7 @@ window.CONQUER_JOBS = [
     fit: "Best confirmed hourly pay on the list, close to home."
   },
   {
-    id: "sb-me", industry: "Construction & Infrastructure", days: 14, title: "Intern Mechanical Engineer – Houston, TX", company: "S&B Engineers and Constructors",
+    id: "sb-me", links: [{"label": "S&B careers (iCIMS)", "url": "https://careers-sbec.icims.com/jobs/14511/intern-%e2%80%93-mechanical-engineer---houston%2c-tx/job"}], industry: "Construction & Infrastructure", days: 14, title: "Intern Mechanical Engineer – Houston, TX", company: "S&B Engineers and Constructors",
     domain: "sbec.com", logo: "https://www.ziprecruiter.com/svc/fotomat/public-nosensitive-ziprecruiter-logos/company/d6d1d502.png",
     location: "Houston, TX", pay: "~$17–23/hr (est.)", source: "ZipRecruiter", posted: "14 days ago",
     url: "https://www.ziprecruiter.com/job-redirect?match_token=CpMBChZfWW12YnBIUHFkT2hfbUJrREtuX1JREiQwMWEyMDE1My1kZGQxLTdjMWUtYjg5NS0zMDkzYWVlZjRkY2MaT0FBRmljc05IOWZzSDJ6MG9vMEl0Y2NUaXZHMmx4ZG9lbEpxVnh0ekJMdkVDSGp2Q3pkSHhoVFdvNUg3OVB0dndjaG5rUnBOMlNQQmNibzggya0FEAEYya0F&tsid=100000502",
@@ -93,7 +94,7 @@ window.CONQUER_JOBS = [
     fit: "Known for strong intern programs and hiring first-years."
   },
   {
-    id: "jacobs-energy", industry: "Construction & Infrastructure", days: 4, title: "Building Energy Modeling Engineering Intern – Summer 2027", company: "Jacobs",
+    id: "jacobs-energy", links: [{"label": "Jacobs careers", "url": "https://careers.jacobs.com/en_US/careers/JobDetail/Building-Energy-Modeling-Engineering-Intern-Summer-2027/48497"}], industry: "Construction & Infrastructure", days: 4, title: "Building Energy Modeling Engineering Intern – Summer 2027", company: "Jacobs",
     domain: "jacobs.com", logo: null, location: "Houston, TX",
     pay: "~$20–30/hr (est.)", source: "Indeed", posted: "Nov 17, 2026",
     url: "https://to.indeed.com/aardhwnvds8c",
@@ -117,7 +118,7 @@ window.CONQUER_JOBS = [
     fit: "Short drive from Fayetteville; good for a semester-long role."
   },
   {
-    id: "keysight-hw", industry: "Robotics & Electronics", days: 11, title: "R&D Hardware Engineer, Intern", company: "Keysight Technologies",
+    id: "keysight-hw", links: [{"label": "Keysight careers", "url": "https://jobs.keysight.com/external/jobs/54345"}], industry: "Robotics & Electronics", days: 11, title: "R&D Hardware Engineer, Intern", company: "Keysight Technologies",
     domain: "keysight.com", logo: "https://www.ziprecruiter.com/svc/fotomat/public-nosensitive-ziprecruiter-logos/company/92dfa87a.png",
     location: "Austin, TX", pay: "~$16–21/hr (est.)", source: "ZipRecruiter", posted: "11 days ago",
     url: "https://www.ziprecruiter.com/job-redirect?match_token=CpQBChZvbTV1ZzhBdGY3QWJmLUIyOW1IVFJREiQwMWEyMDE1NC0xZjVkLTc1NjAtOTJmZC1hMTE4N2I5ZDcwY2EaUEFBR0tzejRZbWFPYjFEcm43b1Z6RkZwV1hsSWFXelVOLS1nMmJEWVhLcDhXVFNxNVNYQ1VPYklGQlZoeFdIeEVwSThsNjJfRW9tMWlnZlQ3IMmtBRABGMmtBQ%3D%3D&tsid=100000502",
@@ -125,7 +126,7 @@ window.CONQUER_JOBS = [
     fit: "Stretch role. Your CS50 coursework helps bridge mechanical and electronics."
   },
   {
-    id: "ti-robotics", industry: "Robotics & Electronics", days: 3, title: "Systems Engineering Intern (Robotics and AI) at Kilby Labs", company: "Texas Instruments",
+    id: "ti-robotics", links: [{"label": "TI careers", "url": "https://careers.ti.com/en/sites/CX/job/25016336/"}], industry: "Robotics & Electronics", days: 3, title: "Systems Engineering Intern (Robotics and AI) at Kilby Labs", company: "Texas Instruments",
     domain: "ti.com", logo: "https://www.ziprecruiter.com/svc/fotomat/public-nosensitive-ziprecruiter-logos/company/31977a4c.png",
     location: "Dallas, TX", pay: "~$15–19/hr (est.)", source: "ZipRecruiter", posted: "3 days ago",
     url: "https://www.ziprecruiter.com/job-redirect?match_token=CpQBChZZaHpvQzgwdnJQYlNwMEIwTGJnOS13EiQwMWEyMDE1NC0xYzMxLTdlM2YtYTYyNC04N2VkZDI2NTc4NmMaUEFBRXBTTXZsbV9HX1B0OEEwcHRFY1o5SC0xOTVhbldEWlMwVngxQVYwdlRnZ0JYcFlVZ0VLbGVLRHM5Z1BhdTJkN1MzVFNtOUZfVndJXzFJIMmtBRABGMmtBQ%3D%3D&tsid=100000502",
@@ -155,7 +156,7 @@ window.CONQUER_JOBS = [
     fit: "Business-side role, but it builds motorsports contacts early. Pair it with an engineering internship later."
   },
   {
-    id: "bosch-test", industry: "Automotive & Mobility", days: 18, title: "Project Management / Test Engineering Intern", company: "Bosch",
+    id: "bosch-test", links: [{"label": "Bosch careers (SmartRecruiters)", "url": "https://jobs.smartrecruiters.com/BoschGroup/744000159649749"}], industry: "Automotive & Mobility", days: 18, title: "Project Management / Test Engineering Intern", company: "Bosch",
     domain: "bosch.com", location: "Plymouth, MI", pay: "~$15–20/hr (est.)", source: "ZipRecruiter", posted: "18 days ago",
     url: "https://www.ziprecruiter.com/job-redirect?match_token=CpQBChY1THJ2UWVqb0pfVGNDY3J5NFpuQndREiQwMWEyMDE2Ny0xNjBhLTc5MmYtYTZkZS05Njc1ZTBmODU0MTUaUEFBRWlIdUJNbmJLRWZhTFY5ZTEzQ01SbEd5VnlsRXg3ZDF0ZDVfMGNWaERKRWYxOG8zLXF5Si1BOF9tNkFldEZSTk82T2h1MDl4SUFKTnNiIMmtBRABGMmtBQ%3D%3D&tsid=100000502",
     summary: "Test engineering and project work at Bosch's automotive hub near Detroit. Bosch supplies brakes, chassis and motorsport electronics.",

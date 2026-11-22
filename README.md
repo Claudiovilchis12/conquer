@@ -2,7 +2,10 @@
 
 Swipe through internships ranked for you, save the ones you want, see where to apply and who to message, and track every application.
 
-Live app: https://claude.ai/artifact/T7HrPCEpWzdPbGZcnyMgvh (Claude artifact: syncs across devices, live search via ZipRecruiter + Indeed connectors)
+- **Web app (GitHub Pages):** https://claudiovilchis12.github.io/conquer/. Open it on your phone, then Share → Add to Home Screen. Uses the built-in feed; saves to the device.
+- **Claude version:** https://claude.ai/artifact/T7HrPCEpWzdPbGZcnyMgvh. Adds live ZipRecruiter/Indeed search, the daily refreshed feed and sync across devices.
+
+Apply links: each internship shows only links confirmed to open that exact posting (the source listing plus any employer careers page that was checked by hand).
 
 ## Tabs
 - **Explore**: swipe deck ranked by match. Each card shows its grid position (P1, P2…), match %, and why it ranks there.
