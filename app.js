@@ -284,6 +284,7 @@
         <div class="facts"><span class="pay">${esc(j.pay)}</span><span>${esc(j.location)}</span></div>
         <p class="summary">${esc(j.summary)}</p>
         <div class="reasons">${s.reasons.map(r => `<span>${esc(r)}</span>`).join("")}</div>
+        ${peopleFor(j).length ? `<div class="ppl">${peopleFor(j).length} people to message here. Tap the card</div>` : ""}
         <div class="meta"><span>${esc(s.industry)}</span><span>${esc(j.source)}, ${esc(j.posted)}</span></div>
       </article>`;
     }).join("");
@@ -439,7 +440,7 @@
           const a = state.apps[j.id];
           return `<button class="row" data-open="${j.id}">${logoHTML(j)}<span class="grow">
             <span class="t">${esc(j.title)}</span><span class="s">${esc(j.company)}, ${esc(j.location)}</span>
-            <span class="s">${esc(j.pay)}</span></span>
+            <span class="s">${esc(j.pay)}</span>${peopleFor(j).length ? `<span class="ppl">${peopleFor(j).length} people to message</span>` : ""}</span>
             <span class="row-end"><span class="score">${j._s.total}%</span>${a && a.status ? `<span class="chip st-${a.status}">${statusLabel(a.status)}</span>` : ""}</span></button>`;
         }).join("")}</div>`;
       return;
@@ -450,7 +451,7 @@
         const list = groups[name], top = list[0];
         return `<button class="folder" data-industry="${esc(name)}">
           <span class="stack">${list.slice(0, 3).map(j => logoHTML(j, "sm")).join("")}</span>
-          <span class="grow"><span class="t">${esc(name)}</span><span class="s">${list.length} saved. Top pick: ${esc(top.company)}</span></span>
+          <span class="grow"><span class="t">${esc(name)}</span><span class="s">${list.length} saved. Top pick: ${esc(top.company)}</span>${list.reduce((n, j) => n + peopleFor(j).length, 0) ? `<span class="ppl">${list.reduce((n, j) => n + peopleFor(j).length, 0)} people to message</span>` : ""}</span>
           <span class="count">${list.length}</span></button>`;
       }).join("")}</div>`;
   }
@@ -465,7 +466,7 @@
         <span class="ico" style="background:${l.c}">${esc(l.t)}</span><span>${esc(l.label)}<small>${esc(l.sub)}</small></span></a>`).join("")}
     </div><p class="note">The first link is the verified listing. The rest search each site for this role.</p></section>`;
 
-    const peopleBox = `<section class="box"><h3>Who to message</h3>
+    const peopleBox = `<section class="box people-box" id="people"><h3>Who to message at ${esc(j.company)}</h3>
       <p class="note top">Ranked by what you have in common, best first.</p>
       ${people.length ? people.map((p, i) => `<div class="person">
           <div class="person-head"><span class="avatar">${esc(initials(p.name))}</span>
@@ -497,11 +498,11 @@
       <div class="reasons">${s.reasons.map(r => `<span>${esc(r)}</span>`).join("")}</div>
       <section class="box"><h3>About the role</h3><p>${esc(j.summary)}</p></section>
       <section class="box fit"><h3>Why it fits you</h3><p>${esc(j.fit)}</p></section>
-      ${opts.preview && !liked ? `
+      ${opts.preview && !liked ? `${peopleBox}
         <button class="btn primary" data-like-from-sheet="${id}">Save this internship</button>
         <button class="btn" data-close>Keep swiping</button>` : `
         ${!(a && a.status) ? `<button class="btn primary" data-start="${id}">Start application</button>` : ""}
-        ${trackBox}${applyBox}${peopleBox}
+        ${trackBox}${peopleBox}${applyBox}
         <button class="btn quiet" data-remove="${id}">Remove from saved</button>`}`;
     $("#sheet").classList.add("open"); $("#sheet").setAttribute("aria-hidden", "false");
     $(".sheet-panel").scrollTop = 0;
