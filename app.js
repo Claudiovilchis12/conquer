@@ -24,6 +24,9 @@
   let PEOPLE = window.CONQUER_PEOPLE || {};
   let LOGOS = window.CONQUER_LOGOS || {};
   let FEED_UPDATED = window.CONQUER_FEED_UPDATED || "";
+  // Weekly "Top picks": written each Sunday by Claude (artifact db feed/toppicks,
+  // or toppicks.json next to the app on GitHub Pages).
+  let PICKS = null; // { week, generated, picks: [{ id, rank, why, action, deadline, deadlineNote, postedDate, ...job }] }
   let JOBS = [], byId = {};
 
   // ---------- State (device + cloud) ----------
@@ -110,9 +113,30 @@
     return { total, reasons: reasons.slice(0, 3), industry: ind };
   }
 
+  // ---------- Deadlines + posting dates ----------
+  const DAY = 86400000;
+  const today0 = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const parseDay = iso => { if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return null; const [y, m, d] = iso.slice(0, 10).split("-").map(Number); return new Date(y, m - 1, d); };
+  const fmtDay = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  function deadlineInfo(j) {
+    const d = parseDay(j.deadline); if (!d) return null;
+    const left = Math.round((d - today0()) / DAY);
+    return { left, label: left < 0 ? "Closed" : left === 0 ? "Due today" : `Apply by ${fmtDay(d)} · ${left} day${left === 1 ? "" : "s"} left`, urgent: left <= 7 };
+  }
+  function postedLabel(j) {
+    const d = parseDay(j.postedDate);
+    return d ? `Posted ${fmtDay(d)}` : j.posted ? `Posted ${j.posted}` : "";
+  }
+  const isClosed = j => j.closed === true || (deadlineInfo(j) || { left: 1 }).left < 0;
+  function deadlineChip(j) {
+    const dl = deadlineInfo(j);
+    if (dl) return `<span class="due ${dl.urgent ? "urgent" : ""}">${esc(dl.label)}</span>`;
+    return j.deadlineNote ? `<span class="due soft">${esc(j.deadlineNote)}</span>` : "";
+  }
+
   function rebuildJobs() {
     const seen = new Set();
-    JOBS = [...BASE, ...(state.extraJobs || [])].filter(j => {
+    JOBS = [...BASE, ...(state.extraJobs || [])].filter(j => !isClosed(j)).filter(j => {
       const k = (j.company + "|" + j.title).toLowerCase();
       if (seen.has(j.id) || seen.has(k)) return false;
       seen.add(j.id); seen.add(k); return true;
@@ -237,7 +261,7 @@
         <span class="bar"><i style="width:${progress(id)}%"></i></span></span>
         <span class="chip st-${a.status}">${statusLabel(a.status)}</span></button>`;
     }).join("");
-    $("#tab-home").innerHTML = `
+    $("#tab-home").innerHTML = topPicksHTML() + `
       <h1 class="h1">Your applications</h1>
       <div class="stats">
         <div><b>${liked}</b><span>Saved</span></div>
@@ -251,6 +275,43 @@
       ${rows ? `<div class="list">${rows}</div>` : `<div class="empty"><h3>Nothing tracked yet</h3>
         <p>Save an internship in Explore, open it from Find Out More, then tap <b>Start application</b>.</p>
         <button class="btn primary" data-go="explore">Go to Explore</button></div>`}`;
+  }
+
+  function currentPicks() {
+    if (PICKS && Array.isArray(PICKS.picks) && PICKS.picks.length) {
+      const list = PICKS.picks.map(p => Object.assign({}, byId[p.id] || p, p)).filter(p => !isClosed(p))
+        .sort((a, b) => (a.rank || 99) - (b.rank || 99));
+      if (list.length) return { auto: false, week: PICKS.week, list };
+    }
+    // Until the first weekly pick lands: best matches, soonest deadlines first among ties.
+    const list = JOBS.filter(j => state.decisions[j.id] !== "pass").slice(0, 5)
+      .map(j => Object.assign({}, j, { why: j._s.reasons.join(" · ") || j.fit }));
+    return { auto: true, list };
+  }
+  function topPicksHTML() {
+    const tp = currentPicks(); if (!tp.list.length) return "";
+    const wk = parseDay(tp.week);
+    return `<section class="picks">
+      <div class="picks-head"><h1 class="h1">Top picks of the week</h1>
+        <span class="s">${tp.auto ? "Your best matches right now. Claude's checked picks arrive every Sunday." : `Week of ${wk ? fmtDay(wk) : esc(tp.week)} · deadlines checked`}</span></div>
+      <div class="list">${tp.list.map((j, i) => `<button class="row pick" data-open-pick="${esc(j.id)}">
+        <span class="pick-rank">${i + 1}</span>${logoHTML(j)}
+        <span class="grow"><span class="t">${esc(j.title)}</span><span class="s">${esc(j.company)}, ${esc(j.location)}</span>
+          <span class="pick-dates">${deadlineChip(j)}${postedLabel(j) ? `<span class="posted">${esc(postedLabel(j))}</span>` : ""}</span>
+          ${j.why ? `<span class="pick-why">${esc(j.why)}</span>` : ""}
+          ${j.action ? `<span class="pick-do">Do: ${esc(j.action)}</span>` : ""}</span></button>`).join("")}</div>
+    </section>`;
+  }
+  // Pick jobs may not be in the feed yet; add them so their profile opens.
+  function absorbPicks() {
+    if (!PICKS || !Array.isArray(PICKS.picks)) return;
+    const have = new Set(BASE.map(j => j.id));
+    PICKS.picks.forEach(p => {
+      if (!p.id) return;
+      if (have.has(p.id)) { const b = BASE.find(j => j.id === p.id); ["deadline", "deadlineNote", "postedDate", "closed"].forEach(k => { if (p[k] != null) b[k] = p[k]; }); }
+      else if (p.title && p.company) BASE.push(Object.assign({ source: "Indeed", pay: "Pay not listed", summary: "", fit: p.why || "", posted: "" }, p));
+    });
+    rebuildJobs();
   }
 
   // ---------- EXPLORE ----------
@@ -278,6 +339,7 @@
         <div class="co-name">${esc(j.company)}</div>
         <h2 class="title">${esc(j.title)}</h2>
         <div class="facts"><span class="pay">${esc(j.pay)}</span><span>${esc(j.location)}</span></div>
+        ${deadlineChip(j) ? `<div class="pick-dates">${deadlineChip(j)}</div>` : ""}
         <p class="summary">${esc(j.summary)}</p>
         <div class="reasons">${s.reasons.map(r => `<span>${esc(r)}</span>`).join("")}</div>
         ${peopleFor(j).length ? `<div class="ppl">${peopleFor(j).length} people to message here. Tap the card</div>` : ""}
@@ -491,10 +553,11 @@
         <div class="grid-pos"><span>P${j._rank}</span><small>${s.total}% match</small></div></div>
       <h2 class="p-title">${esc(j.title)}</h2>
       <div class="facts"><span class="pay">${esc(j.pay)}</span><span>${esc(s.industry)}</span></div>
+      <div class="pick-dates">${deadlineChip(j)}${postedLabel(j) ? `<span class="posted">${esc(postedLabel(j))}</span>` : ""}</div>
       <div class="reasons">${s.reasons.map(r => `<span>${esc(r)}</span>`).join("")}</div>
       <section class="box"><h3>About the role</h3><p>${esc(j.summary)}</p></section>
       <section class="box fit"><h3>Why it fits you</h3><p>${esc(j.fit)}</p></section>
-      ${opts.preview && !liked ? `${peopleBox}
+      ${opts.preview && !liked ? `${opts.pick ? applyBox : ""}${peopleBox}
         <button class="btn primary" data-like-from-sheet="${id}">Save this internship</button>
         <button class="btn" data-close>Keep swiping</button>` : `
         ${!(a && a.status) ? `<button class="btn primary" data-start="${id}">Start application</button>` : ""}
@@ -507,7 +570,7 @@
 
   // ---------- Events ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-go],[data-swipe],[data-undo],[data-close],[data-start],[data-step],[data-remove],[data-like-from-sheet],[data-reset-passed],[data-find],[data-industry],[data-copy]");
+    const t = e.target.closest("[data-open],[data-go],[data-swipe],[data-undo],[data-close],[data-start],[data-step],[data-remove],[data-like-from-sheet],[data-reset-passed],[data-find],[data-industry],[data-copy],[data-open-pick]");
     if (!t) return;
     const d = t.dataset;
     if ("find" in d) findNew();
@@ -518,6 +581,7 @@
       Promise.resolve().then(() => navigator.clipboard.writeText(msg)).then(() => toast("Message copied. Paste it into LinkedIn"))
         .catch(() => { const ta = document.createElement("textarea"); ta.value = msg; t.after(ta); ta.select(); toast("Select and copy the message"); });
     }
+    else if (d.openPick) openProfile(d.openPick, { preview: state.decisions[d.openPick] !== "like", pick: true });
     else if (d.open) openProfile(d.open);
     else if (d.go) show(d.go);
     else if (d.swipe) { const c = $(".swipe-card[data-id]"); if (c) decide(c.dataset.id, d.swipe, c); }
@@ -550,7 +614,12 @@
   })();
 
   // ---------- Boot ----------
-  show("explore");
+  show("home");
+  // GitHub Pages: weekly picks are published as toppicks.json beside the app.
+  if (!window.claude && location.protocol.startsWith("http")) {
+    fetch("toppicks.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && Array.isArray(d.picks) && !PICKS) { PICKS = d; absorbPicks(); render(); } }).catch(() => {});
+  }
   // Installable offline app when served from GitHub Pages (not inside Claude).
   if ("serviceWorker" in navigator && !window.claude && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
   (async () => {
@@ -558,11 +627,12 @@
     if (!db) { setSync("Saved on this device"); return; }
     // Shared feed: Claude's daily refresh writes jobs, logos and people here.
     try {
-      const [f, lg, pp] = await Promise.all(["feed/current", "feed/logos", "feed/people"].map(p => db.doc(p).get()));
+      const [f, lg, pp, tp] = await Promise.all(["feed/current", "feed/logos", "feed/people", "feed/toppicks"].map(p => db.doc(p).get()));
       if (f.exists) { const d = f.data(); if (Array.isArray(d.jobs)) BASE = [...(window.CONQUER_JOBS || []), ...d.jobs]; if (d.updated) FEED_UPDATED = d.updated; }
       if (lg.exists) LOGOS = Object.assign({}, LOGOS, lg.data());
       if (pp.exists) PEOPLE = Object.assign({}, PEOPLE, pp.data());
-      rebuildJobs(); render();
+      if (tp.exists) PICKS = tp.data();
+      rebuildJobs(); absorbPicks(); render();
     } catch {}
     const uid = user && await user.id().catch(() => null);
     if (!uid) { setSync("Saved on this device"); return; }
